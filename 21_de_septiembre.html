@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rosas Amarillas</title>
+    <style>
+        /* ESTILOS GENERALES */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to top, #fff9e6, #fff2c4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* BOTÓN INICIO CENTRADO EN PANTALLA */
+        .btn-inicio {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px 60px;
+            font-size: 26px;
+            font-weight: bold;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ffe066, #ffd633);
+            color: #5a3d00;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+
+        .btn-inicio:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #fff099, #ffdd33);
+        }
+
+        /* MENSAJE POEMA */
+        .mensaje {
+            font-size: 1.5rem;
+            color: #5a3d00;
+            max-width: 650px;
+            margin: 20px auto;
+            opacity: 0;
+            line-height: 2em;
+            text-align: center;
+            z-index: 5;
+            transition: opacity 2s ease;
+        }
+
+        /* RAMO DE ROSAS */
+        .ramo {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 1.5s ease;
+            z-index: 1;
+        }
+
+        /* ROSAS */
+        .rosa {
+            position: relative;
+            width: 130px;
+            height: 220px;
+            cursor: pointer;
+            animation: balancear 6s ease-in-out infinite alternate;
+        }
+
+        .rosa.pequeña {
+            transform: scale(0.7);
+        }
+
+        .rosa.grande {
+            transform: scale(1.3);
+        }
+
+        /* PÉTALOS */
+        .petalo-ext,
+        .petalo-med,
+        .petalo-int {
+            position: absolute;
+            border-radius: 50% 40% 60% 55%;
+            transform-origin: center bottom;
+            animation: latido 5s ease-in-out infinite;
+        }
+
+        .petalo-ext {
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle at 30% 30%, #fff8b5, #ffe066, #ffcb33);
+            top: 20px;
+            left: 20px;
+        }
+
+        .petalo-med {
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle at 30% 30%, #fff9c0, #ffdd66, #ffcc33);
+            top: 25px;
+            left: 25px;
+        }
+
+        .petalo-int {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle at 40% 40%, #fffacd, #ffe066, #ffbb33);
+            top: 30px;
+            left: 30px;
+            box-shadow: inset 0 0 8px rgba(255, 220, 150, 0.6), 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* CENTRO ROSA */
+        .centro {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            top: 35px;
+            left: 35px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffed66, #e6b000, #b58000);
+            box-shadow: inset 0 0 12px #fff, 0 0 20px rgba(255, 220, 100, 0.6);
+        }
+
+        /* TALLOS */
+        .tallo {
+            position: absolute;
+            width: 16px;
+            height: 160px;
+            top: 90px;
+            left: 57px;
+            border-radius: 20px 20px 25px 25px;
+            background: linear-gradient(to bottom, #4CAF50 0%, #145214 100%);
+            transform-origin: top center;
+            animation: talloBalancear 6s ease-in-out infinite alternate;
+        }
+
+        /* HOJAS */
+        .hoja {
+            position: absolute;
+            width: 55px;
+            height: 28px;
+            border-radius: 50px 50px 0 50px;
+            background: linear-gradient(to right, #33cc33, #248f24);
+            transform-origin: left center;
+            top: 125px;
+            left: 12px;
+            animation: hojaMover 4s ease-in-out infinite alternate;
+        }
+
+        .hoja:nth-child(2) {
+            left: 75px;
+            transform: rotate(30deg);
+        }
+
+        /* PETALOS VOLANDO */
+        .petal-fly {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            pointer-events: none;
+            background: radial-gradient(circle at 30% 30%, #fff7b0, #ffe066, #ffcc33);
+            opacity: 0.85;
+            transform-origin: center center;
+        }
+
+        /* BRILLOS */
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #fff;
+            animation: brillar 4s infinite ease-in-out;
+        }
+
+        /* ANIMACIONES */
+        @keyframes balancear {
+            0% {
+                transform: rotate(-4deg);
+            }
+
+            50% {
+                transform: rotate(4deg);
+            }
+
+            100% {
+                transform: rotate(-4deg);
+            }
+        }
+
+        @keyframes latido {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        @keyframes talloBalancear {
+            0% {
+                transform: rotate(-5deg);
+            }
+
+            50% {
+                transform: rotate(5deg);
+            }
+
+            100% {
+                transform: rotate(-5deg);
+            }
+        }
+
+        @keyframes hojaMover {
+            0% {
+                transform: rotate(-35deg) scale(1);
+            }
+
+            50% {
+                transform: rotate(-45deg) scale(1.1);
+            }
+
+            100% {
+                transform: rotate(-35deg) scale(1);
+            }
+        }
+
+        @keyframes brillar {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.4);
+            }
+        }
+
+        @keyframes caerPetalos {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+
+            100% {
+                transform: translateY(700px) rotate(360deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* MÓVIL */
+        @media(max-width:768px) {
+            .ramo {
+                gap: 10px;
+            }
+
+            .rosa {
+                width: 90px;
+                height: 160px;
+            }
+
+            .mensaje {
+                font-size: 1.2rem;
+                line-height: 1.8em;
+            }
+
+            .btn-inicio {
+                font-size: 20px;
+                padding: 15px 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <button class="btn-inicio" onclick="iniciar()">🌹 Iniciar</button>
+        <div class="mensaje" id="mensaje">
+            <h1>Feliz 21 de Septiembre</h1>
+            Hoy te ofrezco estas flores amarillas,<br>
+            no solo como símbolo de un momento,<br>
+            sino como gratitud por lo vivido,<br>
+            por los recuerdos que siguen floreciendo.<br>
+            <br>
+            Que cada pétalo lleve mi agradecimiento,<br>
+            que cada aroma guarde lo que siento,<br>
+            porque tenerte en mi historia<br>
+            es el regalo más bello del tiempo.<br>
+        </div>
+    </div>
+
+    <!-- RAMO -->
+    <div class="ramo" id="ramo">
+        <div class="rosa grande" onclick="lanzarPetalos(this)">
+            <div class="petalo-ext"></div>
+            <div class="petalo-med"></div>
+            <div class="petalo-int"></div>
+            <div class="centro"></div>
+            <div class="tallo"></div>
+            <div class="hoja"></div>
+            <div class="hoja"></div>
+        </div>
+        <div class="rosa" onclick="lanzarPetalos(this)">
+            <div class="petalo-ext"></div>
+            <div class="petalo-med"></div>
+            <div class="petalo-int"></div>
+            <div class="centro"></div>
+            <div class="tallo"></div>
+            <div class="hoja"></div>
+            <div class="hoja"></div>
+        </div>
+        <div class="rosa pequeña" onclick="lanzarPetalos(this)">
+            <div class="petalo-ext"></div>
+            <div class="petalo-med"></div>
+            <div class="petalo-int"></div>
+            <div class="centro"></div>
+            <div class="tallo"></div>
+            <div class="hoja"></div>
+            <div class="hoja"></div>
+        </div>
+    </div>
+
+    <script>
+        function iniciar() {
+            document.querySelector(".btn-inicio").style.display = "none";
+            const mensaje = document.getElementById("mensaje");
+            mensaje.style.opacity = 1;
+
+            const ramo = document.getElementById("ramo");
+            ramo.style.opacity = 1;
+            ramo.style.transform = "scale(1)";
+
+            generarBrillos();
+            generarPetalosCaida();
+        }
+
+        /* BRILLOS */
+        function generarBrillos() {
+            for (let i = 0; i < 50; i++) {
+                const s = document.createElement("div");
+                s.className = "sparkle";
+                s.style.left = Math.random() * window.innerWidth + "px";
+                s.style.top = Math.random() * window.innerHeight + "px";
+                s.style.animationDuration = (3 + Math.random() * 3) + "s";
+                document.body.appendChild(s);
+            }
+        }
+
+        /* PÉTALOS CAÍDA */
+        function generarPetalosCaida() {
+            for (let i = 0; i < 50; i++) crearPetaloAleatorio();
+        }
+        function crearPetaloAleatorio() {
+            const p = document.createElement("div");
+            p.className = "petal-fly";
+            p.style.left = Math.random() * window.innerWidth + "px";
+            p.style.top = "-20px";
+            p.style.width = 15 + Math.random() * 12 + "px";
+            p.style.height = 15 + Math.random() * 12 + "px";
+            p.style.animation = `caerPetalos ${5 + Math.random() * 5}s linear infinite`;
+            document.body.appendChild(p);
+        }
+
+        /* PÉTALOS AL CLIC EN ROSA */
+        function lanzarPetalos(rosa) {
+            for (let i = 0; i < 8; i++) {
+                const p = document.createElement("div");
+                p.className = "petal-fly";
+                const rect = rosa.getBoundingClientRect();
+                p.style.left = rect.left + rect.width / 2 + "px";
+                p.style.top = rect.top + "px";
+                p.style.width = 15 + Math.random() * 12 + "px";
+                p.style.height = 15 + Math.random() * 12 + "px";
+                p.style.animation = `caerPetalos ${2 + Math.random() * 3}s linear forwards`;
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 4000);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
